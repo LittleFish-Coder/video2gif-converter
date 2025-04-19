@@ -23,6 +23,22 @@ def fetch_sticker_info(url):
     urls_found = set()
 
     try:
+        # 確保 URL 開頭為 https:
+        url = url.strip()
+        # 確保 URL 開頭為 https:
+        if not url.startswith("https:"):
+            if url.startswith("http:"):
+                url = url.replace("http:", "https:", 1)
+                st.warning("已自動將 URL 修正為 https 格式。")
+            else:
+                # 嘗試從輸入中提取 URL
+                match = re.search(r"https?://[^\s]+", url)
+                if match:
+                    url = match.group(0).replace("http:", "https:", 1)
+                    st.warning("已從輸入中提取並修正 URL 為 https 格式。")
+                else:
+                    st.error("請輸入有效的 URL，必須以 'https:' 開頭。")
+                    return None
         response = requests.get(url, headers=headers, timeout=10)
         response.raise_for_status()
         response.encoding = response.apparent_encoding
