@@ -132,6 +132,31 @@ def get_content_and_filename(url, index):
         response = requests.get(url, stream=True, timeout=10)
         response.raise_for_status()
         content = response.content
+
+        # 決定副檔名
+        extension = ".gif" # 預設為 .gif
+        if 'image/gif' in content_type:
+            extension = ".gif"
+        elif 'image/png' in content_type: # 可能是 APNG
+            extension = ".png"
+        elif 'image/webp' in content_type:
+            extension = ".webp"
+        elif 'image/jpeg' in content_type or 'image/jpg' in content_type:
+             extension = ".jpg"
+        else:
+            # 嘗試從 URL 提取原始副檔名 (如果有的話)
+            try:
+                path = url.split('?')[0] # 去掉查詢參數
+                original_ext = os.path.splitext(path)[1]
+                if original_ext and len(original_ext) <= 5: # 簡單檢查是否像副檔名
+                    extension = original_ext
+            except Exception:
+                pass # 出錯就用預設的 .gif
+
+        # 生成檔名 (例如 sticker_1.gif, sticker_2.png)
+        filename = f"sticker_{index+1}{extension}"
+
+        return content, filename, content_type
         extension = ".gif"
         filename = f"sticker_{index+1}{extension}" # 檔名從 1 開始
         mime_type = "image/gif"
