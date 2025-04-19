@@ -1,2 +1,4 @@
 streamlit
 moviepy
+beautifulsoup4
+requests
